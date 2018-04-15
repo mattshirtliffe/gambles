@@ -7,6 +7,8 @@ class ClientTestCase(unittest.TestCase):
     def setUp(self):
         """Set up test variables."""
         self.client = Gambles()
+        data = {"first_name": "Matthew", "last_name": "Shirtliffe"}
+        response = self.client.store('test', data, key="doc")
 
     def test_ping(self):
         response = self.client.ping()
@@ -40,11 +42,13 @@ class ClientTestCase(unittest.TestCase):
         response = self.client.fetch('test',"doc")
         self.assertIn('first_name', response)
 
+    @unittest.skip("Not implemented yet")
     def test_update(self):
         self.assertTrue(False)
 
     def test_delete(self):
-        self.assertTrue(False)
+        response = self.client.delete('test', key="doc")
+        self.assertIsNone(response)
 
 if __name__ == '__main__':
     unittest.main()

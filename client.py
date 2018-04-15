@@ -144,10 +144,25 @@ class Gambles():
         else:
             return response.status_code,response.text
 
-    def update(self, bucket, type=None, key=None):
+    def update(self, bucket, bucket_type=None, key=None):
         """Stores an object under the specified bucket / key."""
         return None
 
-    def delete(self, bucket, type=None, key=None):
+    def delete(self, bucket, bucket_type=None, key=None):
         """delete an object under the specified bucket / key."""
-        return None
+        url = None
+        if bucket_type:
+            url = self.url+'/types/' + bucket_type + '/buckets/'+ bucket +'/keys'
+        else:
+            url = self.url+'/buckets/' + bucket + '/keys'
+
+        if key:
+            url += "/" + key
+
+
+        response = requests.delete(url)
+        good_status_codes = (201,200,204)
+        if response.status_code in good_status_codes:
+            return None
+        else:
+            return response.status_code,response.text
