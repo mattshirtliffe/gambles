@@ -24,8 +24,21 @@ class ClientTestCase(unittest.TestCase):
         self.assertTrue(True)
 
     def test_get_buckets(self):
-        response = self.client.get_buckets()
+        response = self.client.list_buckets()
         self.assertIn('buckets', response)
+
+    def test_store(self):
+        data = {"first_name":"Matthew","last_name":"Shirtliffe"}
+        response = self.client.store('test',data,key="doc")
+        self.assertIn('first_name', response)
+
+    def test_get(self):
+        response = self.client.get('test',"doc")
+        self.assertIn('first_name', response)
+
+    def test_fetch(self):
+        response = self.client.fetch('test',"doc")
+        self.assertIn('first_name', response)
 
 
 if __name__ == '__main__':

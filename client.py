@@ -6,7 +6,7 @@ class Gambles():
         self.url = url
 
     # List Buckets
-    def get_buckets(self,bucket_type=None):
+    def list_buckets(self, bucket_type=None):
         """Return a list of buckets by type of no type"""
         if bucket_type:
             response = requests.get(self.url + '/types/'+ bucket_type +'/buckets', params={"buckets": "true"})
@@ -22,8 +22,8 @@ class Gambles():
 
 
     # List Keys (Should not be used in production)
-    def list_key(self,bucket,bucket_type=None):
-
+    def list_keys(self,bucket,bucket_type=None):
+        print("you better not be running this in production!")
         # TODO add option to stream {"key":"stream"}
         if bucket_type:
             response = requests.get(self.url+'/types/'+ bucket_type +'/buckets/'+ bucket +'/keys', params={"keys":"true"})
@@ -79,7 +79,6 @@ class Gambles():
         response = requests.get(self.url + '/stats')
         return response.json()
 
-
     def resources(self):
         response = requests.get(self.url + '/')
         # return html list
@@ -87,22 +86,56 @@ class Gambles():
         return response.text
 
     # Object Related Operations
-    def fetch_object(self,bucket,type = None,key = None):
+    def fetch(self,bucket, key, bucket_type=None):
         """Reads an object from the specified bucket/key."""
-        return None
+        url = None
+        if bucket_type:
+            url = self.url + '/types/' + bucket_type + '/buckets/' + bucket + '/keys/'+ key
+        else:
+            url = self.url + '/buckets/' + bucket + '/keys/'+ key
 
-    def get_object(self,bucket,type = None,key = None):
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 404:
+            return "Not Found"
+        else:
+            return response.status_code,response.text
+
+    def get(self,bucket, key, bucket_type = None):
         """Reads an object from the specified bucket/key."""
-        self.fetch_object(self, bucket, type, key)
+        return self.fetch(bucket, key, bucket_type)
 
-    def store_object(self, bucket, type=None, key=None):
+    def store(self, bucket, data, bucket_type=None, key=None):
+        """Stores an object under the specified bucket / key."""
+        url = None
+        if bucket_type:
+            url = self.url+'/types/' + bucket_type + '/buckets/'+ bucket +'/keys'
+        else:
+            url = self.url+'/buckets/' + bucket + '/keys'
+
+        if key:
+            url += "/" + key
+
+        # headers = {
+        #     'Content-Type':'application/json',
+        #     'X-Riak-Vclock':'my-app/0.0.1',
+        #     'X-Riak-Meta-*':'',
+        #     'X-Riak-Index-*':'',
+        #     'Link:':''
+        # }
+        response = requests.post(url,json=data,params={"returnbody":"true"})
+        good_status_codes = (201,200,204)
+        if response.status_code in good_status_codes:
+            return response.json()
+        else:
+            return response.status_code,response.text
+
+    def update(self, bucket, type=None, key=None):
         """Stores an object under the specified bucket / key."""
         return None
 
-    def update_object(self, bucket, type=None, key=None):
-        """Stores an object under the specified bucket / key."""
-        return None
-
-    def delete_object(self, bucket, type=None, key=None):
+    def delete(self, bucket, type=None, key=None):
         """delete an object under the specified bucket / key."""
         return None
