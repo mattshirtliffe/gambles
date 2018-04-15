@@ -7,9 +7,21 @@ class Gambles():
 
     # List Buckets
     def list_buckets(self, bucket_type=None):
-        """Return a list of buckets by type of no type"""
+        """Return a list of buckets by type or just all buckets
+        Parameters
+        ----------
+        bucket_type : str
+            The type of bucket can be None which will give
+            default.
+
+        Returns
+        -------
+        obj
+            json of buckets
+        """
+
         if bucket_type:
-            response = requests.get(self.url + '/types/'+ bucket_type +'/buckets', params={"buckets": "true"})
+            response = requests.get(self.url + '/types/' + bucket_type + '/buckets', params={"buckets": "true"})
         else:
             response = requests.get(self.url+'/buckets',params={"buckets":"true"})
 
@@ -95,7 +107,6 @@ class Gambles():
             url = self.url + '/buckets/' + bucket + '/keys/'+ key
 
         response = requests.get(url)
-
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 404:
@@ -125,6 +136,7 @@ class Gambles():
         #     'X-Riak-Index-*':'',
         #     'Link:':''
         # }
+
         response = requests.post(url,json=data,params={"returnbody":"true"})
         good_status_codes = (201,200,204)
         if response.status_code in good_status_codes:

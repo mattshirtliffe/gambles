@@ -40,6 +40,11 @@ class ClientTestCase(unittest.TestCase):
         response = self.client.fetch('test',"doc")
         self.assertIn('first_name', response)
 
+    def test_update(self):
+        self.assertTrue(False)
+
+    def test_delete(self):
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
